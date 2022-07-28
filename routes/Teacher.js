@@ -1,4 +1,6 @@
 import express from 'express';
+import {connection} from '../connection.js';
+
 const teacherRouter = express.Router();
 
 teacherRouter
