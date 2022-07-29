@@ -1,4 +1,4 @@
-import {connection} from '../connection.js';
+import connection from '../app.js';
 import express from 'express';
 const dataRouter = express.Router();
 
@@ -22,103 +22,144 @@ export function postData(req, res) {
     //     message: "Postdata accessed ",
     //     id: 1
     // });
+    connection.query(`USE school`, (err, result)=>{
+        if (err) throw err;
+        console.log('Database in use');
+    })
     var data = req.body;
 
     var tableName = data.tableName;
-    var id = data.id;
-    var name = data.name;
-    var year = data.year;
-    var time_slot_id = data.time_slot_id;
-    var time_slot = data.time_slot;
-    var day = data.day;
-    var room_number = data.room_number;
-    var capacity = data.capacity
-    var block = data.block;
 
-    var teach_id = data.teach_id;
-    var stud_id = data.stud_id;
-    var course_id = data.course_id;
-    var time_id = data.time_id;
-    var room_number_id = data.room_number_id;
+    if(typeof data.teach_id === 'undefined' &&
+    typeof data.stud_id === 'undefined' &&
+    typeof data.course_id === 'undefined' &&
+    typeof data.time_id === 'undefined' &&
+    typeof data.room_number_id === 'undefined' ){ // Normal table fill up
 
-    if(typeof teach_id === 'undefined' &&
-    typeof stud_id === 'undefined' &&
-    typeof course_id === 'undefined' &&
-    typeof time_id === 'undefined' &&
-    typeof room_number_id === 'undefined' ){ // Normal table fill up
+        if(typeof data.id === 'undefined' && typeof data.name === 'undefined'){ // Timeslot, classroom
 
-        if(typeof id === 'undefined' && typeof name === 'undefined'){ // Timeslot, classroom
+            if(typeof data.time_id === 'undefined'){ // classroom
+                var room_number = data.room_number;
+                var capacity = data.capacity;
+                var block = data.block;
 
-            if(typeof time_id === 'undefined'){ // classroom
-                connection.query(`INSERT INTO TABLE classroom(room_number, capacity, block) VALUES (${room_number}, ${capacity}, ${block})`, (err, result)=>{
+                connection.query(`INSERT INTO classroom(room_number, capacity, block) VALUES (${room_number}, ${capacity}, '${block}')`, (err, result)=>{
                     if(err) throw err;
                     console.log(`Data added to ${tableName}, named :${room_number}, ${capacity}, ${block}`)
+                    res.json({
+                        'message': 1
+                    })
                 })
 
             } else { // Timeslot
-                connection.query(`INSERT INTO TABLE time_slot(time_slot_id, time_slot, day) VALUES (${time_slot_id}, ${time_slot}, ${day})`, (err, result)=>{
+                
+                var time_slot_id = data.time_slot_id;
+                var time_slot = data.time_slot;
+                var day = `'${data.day}'`;
+
+                connection.query(`INSERT INTO time_slot(time_slot, day) VALUES (${time_slot}, '${day}')`, (err, result)=>{
                     if(err) throw err;
-                    console.log(`Data added to ${tableName}, named :${time_slot_id}, ${time_slot}, ${day}`)
+                    console.log(`Data added to ${tableName}, named :${time_slot}, ${day} with auto Increment`)
+                    res.json({
+                        'message': 1
+                    })
                 })
             }
 
         } else {    // Student, Teacher, Course
-            if(typeof year === 'undefined') {   // Student, Teacher
-                if(tableName === 'student'){    // Student
-                    connection.query(`INSERT INTO TABLE student(id, name) VALUES (${id}, ${name})`, (err, result)=>{
+            var id = data.id;
+            var name = `'${data.name}'`;
+
+            if(typeof data.year === 'undefined') {   // Student, Teacher
+                
+                if(tableName == "student"){    // Student
+                    connection.query(`INSERT INTO student(name) VALUES (${name})`, (err, result)=>{
                         if(err) throw err;
-                        console.log(`Data added to ${tableName}, named :${id}, ${name}`)
+                        console.log(`Data added to ${tableName}, named :${name} with auto Increment`)
+                        res.json({
+                            'message': 1
+                        })
                     })
 
                 } else { // Teacher
-                    connection.query(`INSERT INTO TABLE teacher(id, name) VALUES (${id}, ${name})`, (err, result)=>{
+                    connection.query(`INSERT INTO teacher(name) VALUES (${name})`, (err, result)=>{
                         if(err) throw err;
-                        console.log(`Data added to ${tableName}, named :`)
+                        console.log(`Data added to ${tableName}, named : ${name} with auto increment`)
+                        res.json({
+                            'message': 1
+                        })
                     })
                 }
 
             } else {    // Course
-                connection.query(`INSERT INTO TABLE course(id, name, year) VALUES (${id}, ${name}, ${year})`, (err, result)=>{
+                var year = data.year;
+                connection.query(`INSERT INTO course(name, year) VALUES (${name}, ${year})`, (err, result)=>{
                     if(err) throw err;
-                    console.log(`Data added to ${tableName}, named :${id}, ${name}, ${year}`)
+                    console.log(`Data added to ${tableName}, named :${name}, ${year} with auto increment`)
+                    res.json({
+                        'message': 1
+                    })
                 })
             }
 
         }
+        
     } else { // relation table fill up
-        if(typeof course_id !== 'undefined'){ // takes, teaches, course_time_slot, class_used, 
+        if(typeof data.course_id !== 'undefined'){ // takes, teaches, course_time_slot, class_used
+            var course_id = data.course_id;
 
-            if(typeof teach_id !== 'undefined'){ // teaches
-                connection.query(`INSERT INTO TABLE teaches(teach_id, course_id) VALUES (${teach_id}, ${course_id})`, (err, result)=>{
+            if(typeof data.teach_id !== 'undefined'){ // teaches
+                var teach_id = data.teach_id;
+                connection.query(`INSERT INTO teaches(teach_id, course_id) VALUES (${teach_id}, ${course_id})`, (err, result)=>{
                     if(err) throw err;
                     console.log(`Data added to ${tableName}, named :${teach_id}, ${course_id}`)
+                    res.json({
+                        'message': 1
+                    })
                 })
             } 
-            else if(typeof stud_id !== 'undefined') { // takes
-                connection.query(`INSERT INTO TABLE takes(stud_id, course_id) VALUES (${stud_id}, ${course_id})`, (err, result)=>{
+            else if(typeof data.stud_id !== 'undefined') { // takes
+                var stud_id = data.stud_id;
+                connection.query(`INSERT INTO takes(stud_id, course_id) VALUES (${stud_id}, ${course_id})`, (err, result)=>{
                     if(err) throw err;
-                    console.log(`Data added to ${tableName}, named :`)
+                    console.log(`Data added to ${tableName}, named :${stud_id}, ${course_id}`)
+                    res.json({
+                        'message': 1
+                    })
                 })
             }
 
-            else if(typeof time_id !== 'undefined') { //course_time_slot
-                connection.query(`INSERT INTO TABLE course_time_table(course_id, time_id) VALUES (${course_id}, ${time_id})`, (err, result)=>{
+            else if(typeof data.time_id !== 'undefined') { //course_time_slot
+                var time_id = data.time_id;
+                connection.query(`INSERT INTO course_time_table(course_id, time_id) VALUES (${course_id}, ${time_id})`, (err, result)=>{
                     if(err) throw err;
                     console.log(`Data added to ${tableName}, named :${course_id}, ${time_id}`)
+                    res.json({
+                        'message': 1
+                    })
                 })
             }
 
             else {  //class_used
-                connection.query(`INSERT INTO TABLE class_used(course_id, room_number_id) VALUES (${course_id}, ${room_number_id})`, (err, result)=>{
+                var room_number_id = data.room_number_id;
+                connection.query(`INSERT INTO class_used(course_id, room_number_id) VALUES (${course_id}, ${room_number_id})`, (err, result)=>{
                     if(err) throw err;
                     console.log(`Data added to ${tableName}, named :${course_id}, ${room_number_id}`)
+                    res.json({
+                        'message': 1
+                    })
                 })
             }
 
-        } else { // Intructs
+        } else { // Instructs
+            var teach_id = data.teach_id;
+            var stud_id = data.stud_id;
             connection.query(`INSERT INTO TABLE instructs(teach_id, stud_id) VALUES (${teach_id}, ${stud_id})`, (err, result)=>{
                 if(err) throw err;
                 console.log(`Data added to ${tableName}, named :${teach_id}, ${stud_id}`)
+                res.json({
+                    'message': 1
+                })
             })
         }
 

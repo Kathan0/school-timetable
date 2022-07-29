@@ -1,5 +1,5 @@
 import express from 'express';
-import {connection} from '../connection.js';
+import connection from '../app.js';
 const userRouter = express.Router();
 
 userRouter

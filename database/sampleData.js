@@ -86,13 +86,4 @@ connection.connect(function(err){
         console.log(`Inserted Data into teacher, named: 5, Phoebe`);
     })
 
-        
-    connection.query(`INSERT INTO teacher(id,name) VALUES (5, 'Phoebe')`,(err, res)=>{
-        if(err) throw err
-        console.log(`Inserted Data into teacher, named: 5, Phoebe`);
-    })    
-    connection.query(`INSERT INTO teacher(id,name) VALUES (5, 'Phoebe')`,(err, res)=>{
-        if(err) throw err
-        console.log(`Inserted Data into teacher, named: 5, Phoebe`);
-    })
 })

@@ -76,7 +76,6 @@ connection.connect(function(err) {
 
         connection.query(`CREATE TABLE classroom(
         room_number INT NOT NULL,
-        capacity INT NOT NULL,
         block VARCHAR(1),
         PRIMARY KEY(room_number)
     )`, (err, result) => {
@@ -87,7 +86,7 @@ connection.connect(function(err) {
         connection.query(`CREATE TABLE instructs(
         teach_id INT NOT NULL,
         stud_id INT NOT NULL,
-        PRIMARY KEY(teach_id)
+        PRIMARY KEY(teach_id, stud_id)
     )`, (err, result) => {
             if (err) throw err;
             console.log("Table instructs created");
@@ -96,7 +95,7 @@ connection.connect(function(err) {
         connection.query(`CREATE TABLE takes(
         stud_id INT NOT NULL,
         course_id INT NOT NULL,
-        PRIMARY KEY(stud_id)
+        PRIMARY KEY(stud_id, course_id)
     )`, (err, result) => {
             if (err) throw err;
             console.log("Table takes created");
@@ -105,7 +104,7 @@ connection.connect(function(err) {
         connection.query(`CREATE TABLE teaches(
         teach_id INT NOT NULL,
         course_id INT NOT NULL,
-        PRIMARY KEY(teach_id)
+        PRIMARY KEY(teach_id, course_id)
     )`, (err, result) => {
             if (err) throw err;
             console.log("Table teaches created");
@@ -114,7 +113,8 @@ connection.connect(function(err) {
         connection.query(`CREATE TABLE course_time_slot(
         course_id INT NOT NULL,
         time_id INT NOT NULL,
-        PRIMARY KEY(course_id)
+        day VARCHAR(10),
+        PRIMARY KEY(time_id, day)
     )`, (err, result) => {
             if (err) throw err;
             console.log("Table course_time_slot created");
