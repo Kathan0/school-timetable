@@ -19,52 +19,52 @@ connection.connect(function(err){
         if (err) throw err
         console.log("Database in use");
     });
-    connection.query(`INSERT INTO student(id,name) VALUES (1, 'Will')`,(err, res)=>{
+    connection.query(`INSERT INTO student(id,name, password) VALUES (1, 'Will', '1234')`,(err, res)=>{
         if(err) throw err
         console.log(`Inserted Data into student, named: 1, Will`);
     })    
-    connection.query(`INSERT INTO student(id,name) VALUES (2, 'Rob')`,(err, res)=>{
+    connection.query(`INSERT INTO student(id,name, password) VALUES (2, 'Rob', '1234')`,(err, res)=>{
         if(err) throw err
         console.log(`Inserted Data into student, named: 2, Rob`);
     })    
-    connection.query(`INSERT INTO student(id,name) VALUES (3, 'Mat')`,(err, res)=>{
+    connection.query(`INSERT INTO student(id,name, password) VALUES (3, 'Mat', '1234')`,(err, res)=>{
         if(err) throw err
         console.log(`Inserted Data into student, named: 3, Mat`);
     })    
-    connection.query(`INSERT INTO student(id,name) VALUES (4, 'Amy')`,(err, res)=>{
+    connection.query(`INSERT INTO student(id,name, password) VALUES (4, 'Amy', '1234')`,(err, res)=>{
         if(err) throw err
         console.log(`Inserted Data into student, named: 4, Amy`);
     })    
-    connection.query(`INSERT INTO student(id,name) VALUES (5, 'Sheldon')`,(err, res)=>{
+    connection.query(`INSERT INTO student(id,name, password) VALUES (5, 'Sheldon', '1234')`,(err, res)=>{
         if(err) throw err
         console.log(`Inserted Data into student, named: 5, Sheldon`);
         console.log("**********************Student end******************")
     })
 
         
-    connection.query(`INSERT INTO teacher(id,name) VALUES (1, 'Ross')`,(err, res)=>{
+    connection.query(`INSERT INTO teacher(id,name, password) VALUES (1, 'Ross', '1234')`,(err, res)=>{
         if(err) throw err
-        console.log(`Inserted Data into teacher, named: 1, Ross`);
+        console.log(`Inserted Data into teacher, name, password: 1, Ross`);
     })    
-    connection.query(`INSERT INTO teacher(id,name) VALUES (2, 'Joey')`,(err, res)=>{
+    connection.query(`INSERT INTO teacher(id,name, password) VALUES (2, 'Joey', '1234')`,(err, res)=>{
         if(err) throw err
-        console.log(`Inserted Data into teacher, named: 2, Joey`);
+        console.log(`Inserted Data into teacher, name, password: 2, Joey`);
     })    
-    connection.query(`INSERT INTO teacher(id,name) VALUES (3, 'Chandler')`,(err, res)=>{
+    connection.query(`INSERT INTO teacher(id,name, password) VALUES (3, 'Chandler', '1234')`,(err, res)=>{
         if(err) throw err
-        console.log(`Inserted Data into teacher, named: 3, Chandler`);
+        console.log(`Inserted Data into teacher, name, password: 3, Chandler`);
     })    
-    connection.query(`INSERT INTO teacher(id,name) VALUES (4, 'Monica')`,(err, res)=>{
+    connection.query(`INSERT INTO teacher(id,name, password) VALUES (4, 'Monica', '1234')`,(err, res)=>{
         if(err) throw err
-        console.log(`Inserted Data into teacher, named: 4, Monica`);
+        console.log(`Inserted Data into teacher, name, password: 4, Monica`);
     })    
-    connection.query(`INSERT INTO teacher(id,name) VALUES (5, 'Phoebe')`,(err, res)=>{
+    connection.query(`INSERT INTO teacher(id,name, password) VALUES (5, 'Phoebe', '1234')`,(err, res)=>{
         if(err) throw err
-        console.log(`Inserted Data into teacher, named: 5, Phoebe`);
+        console.log(`Inserted Data into teacher, name, password: 5, Phoebe`);
     })    
-    connection.query(`INSERT INTO teacher(id,name) VALUES (6, 'Rachel')`,(err, res)=>{
+    connection.query(`INSERT INTO teacher(id,name, password) VALUES (6, 'Rachel', '1234')`,(err, res)=>{
         if(err) throw err
-        console.log(`Inserted Data into teacher, named: 6, Rachel`);
+        console.log(`Inserted Data into teacher, name, password: 6, Rachel`);
         console.log("****************Teacher end******************")
     })
 

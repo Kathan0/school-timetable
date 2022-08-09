@@ -9,11 +9,7 @@ userRouter
     .delete('/user', deleteUser);
 
 export function getUser(req, res) {
-    console.log("GetUser accessed");
-    res.json({
-        message: "getUser accessed",
-        id: 1
-    });
+    
 }
 
 export function postUser(req, res) {

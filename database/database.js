@@ -39,6 +39,7 @@ connection.connect(function(err) {
         connection.query(`CREATE TABLE student(
         id INT NOT NULL AUTO_INCREMENT,
         name VARCHAR(20) NOT NULL,
+        password VARCHAR(255) NOT NULL,
         PRIMARY KEY(id)
     )`, (err, result) => {
             if (err) throw err;
@@ -48,6 +49,7 @@ connection.connect(function(err) {
         connection.query(`CREATE TABLE teacher(
         id INT NOT NULL AUTO_INCREMENT,
         name VARCHAR(20) NOT NULL,
+        password VARCHAR(255) NOT NULL,
         PRIMARY KEY(id)
     )`, (err, result) => {
             if (err) throw err;
@@ -67,7 +69,7 @@ connection.connect(function(err) {
         connection.query(`CREATE TABLE time_slot(
         time_slot_id INT NOT NULL AUTO_INCREMENT,
         time_slot INT NOT NULL,
-        day VARCHAR(10),
+        day VARCHAR(10) NOT NULL,
         PRIMARY KEY(time_slot_id)
     )`, (err, result) => {
             if (err) throw err;
@@ -75,8 +77,8 @@ connection.connect(function(err) {
         })
 
         connection.query(`CREATE TABLE classroom(
-        room_number INT NOT NULL,
-        block VARCHAR(1),
+        room_number INT NOT NULL AUTO_INCREMENT,
+        block VARCHAR(4) NOT NULL,
         PRIMARY KEY(room_number)
     )`, (err, result) => {
             if (err) throw err;
@@ -113,8 +115,7 @@ connection.connect(function(err) {
         connection.query(`CREATE TABLE course_time_slot(
         course_id INT NOT NULL,
         time_id INT NOT NULL,
-        day VARCHAR(10),
-        PRIMARY KEY(time_id, day)
+        PRIMARY KEY(time_id, course_id)
     )`, (err, result) => {
             if (err) throw err;
             console.log("Table course_time_slot created");

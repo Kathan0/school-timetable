@@ -13,5 +13,6 @@ const { NULL } = require('mysql/lib/protocol/constants/types');
 export const connection = mysql.createConnection({
     host: "127.0.0.1",
     user: "root",
-    password: "12345678"
+    password: "12345678",
+    multipleStatements: true
 });
