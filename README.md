@@ -1,9 +1,9 @@
 # school-timetable
 
-##Create Database
+## Create Database
 
-###node database/database.js
+### node database/database.js
 
-##Add pseudo/test data
+## Add pseudo/test data
 
-###node database/sampleData.js
+### node database/sampleData.js
