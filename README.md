@@ -6,4 +6,4 @@
 
 ## Add pseudo/test data
 
-### node database/sampleData.js
+### send database/databaseData.js as a request to localhost:4000/data as POST request
