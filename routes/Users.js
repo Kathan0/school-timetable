@@ -5,7 +5,7 @@ const userRouter = express.Router();
 userRouter
     .get('/user', getUser)
     .post('/user', postUser)
-    // .patch('/user', patchUser)
+    .patch('/user', patchUser)
     // .delete('/user', deleteUser);
 
 export function getUser(req, res) {
@@ -45,7 +45,7 @@ export function getUser(req, res) {
     }
 }
 
-export function postUser(req, res) { // Update password for user
+export function postUser(req, res) { // Update password for user, Register for timetable, Addition option
     var data = req.body;
     let date = new Date();
 
@@ -125,7 +125,7 @@ export function postUser(req, res) { // Update password for user
         })
 
     }
-    else if(data.tableName == 'course' && data.tableName != 'undefined' && typeof data.type !=='undefined' && data.type == 'addition'){ // Update 'takes' and 'course: id'
+    else if(data.tableName == 'course' && data.tableName != 'undefined' && typeof data.type !=='undefined' && data.type == 'addition'){ // Update 'takes'
         if(typeof data.stud_id !== 'undefined' && typeof data.course_name !== 'undefined' && typeof data.course_year !== 'undefined'){
             
             connection.query(`USE school`, (err, result)=>{
@@ -135,18 +135,55 @@ export function postUser(req, res) { // Update password for user
 
             connection.query(`SELECT t.course_id FROM takes t WHERE t.stud_id = ${data.stud_id}`, (err, result)=>{
                 if(err) throw err;
-                var resultArray = Object.values(JSON.parse(JSON.stringify(result)));
-                console.log(resultArray);
-                if(resultArray.length > 0){
 
-                }
-                else {
-                    connection.query(``)
-                }
+                var resultArray = Object.values(JSON.parse(JSON.stringify(result)));
+
+                    connection.query(`SELECT c.id FROM course c WHERE c.name = '${data.course_name}' AND c.year = ${data.course_year}`, (err, result2)=>{
+                        if(err) throw err;
+                        
+                        var resultArrayCourse = Object.values(JSON.parse(JSON.stringify(result2)));
+
+                        if(resultArray.length > 0){
+
+                            var isPresent = false;
+                            for(var i=0; i<resultArray.length; i++){
+                                if(resultArray[i].course_id == resultArrayCourse[0].id)
+                                isPresent = true;
+                            }
+                            if(isPresent == false){
+                                connection.query(`INSERT INTO takes(stud_id, course_id) VALUES (${data.stud_id}, ${resultArrayCourse[0].id})`, (err, result)=>{
+                                    if(err) throw err;
+                                    console.log("Course with name:"+data.course_name+", year:"+data.course_year+" and course id:"+resultArrayCourse[0].id+" Successfully added to your course");
+                                    res.send({
+                                        message: 1
+                                    })
+                                })
+                            }
+                            else
+                            res.send({
+                                message: 0
+                            })
+                        }
+                        else {
+                            connection.query(`INSERT INTO takes(stud_id, course_id) VALUES (${data.stud_id}, ${resultArrayCourse[0].id})`, (err, result)=>{
+                                if(err) throw err;
+                                console.log("Course with name:"+data.course_name+", year:"+data.course_year+" and course id:"+resultArrayCourse[0].id+" Successfully added to your course");
+                                res.send({
+                                    message: 1
+                                })
+                            })
+                        }
+
+
+
+                    })
+
             })
         }
-
-
+        else 
+        res.send({
+            message: -1
+        })
 
     }
     else{   
@@ -158,13 +195,13 @@ export function postUser(req, res) { // Update password for user
     
 }
 
-// export function patchUser(req, res) {
-//     console.log("PatchUser accessed");
-//     res.json({
-//         message: "PatchUser accessed ",
-//         id: 1
-//     });
-// }
+export function patchUser(req, res) {
+    console.log("PatchUser accessed");
+    res.json({
+        message: "PatchUser accessed ",
+        id: 1
+    });
+}
 
 // export function deleteUser(req, res) {
 //     console.log("DeleteUser accessed");
