@@ -1,31 +1,45 @@
-[{
+[
+{
 	"tableName": "student",
 	"name": "Will",
-	"password": "1234"
+	"password": "1234",
+	"year":"6"
 },{
 	"tableName": "student",
 	"name": "Amy",
-	"password": "1234"
+	"password": "1234",
+	"year":"7"
 },{
 	"tableName": "student",
 	"name": "Sheldon",
-	"password": "1234"
+	"password": "1234",
+	"year":"8"
 },{
 	"tableName": "student",
 	"name": "Hollow",
-	"password": "1234"
+	"password": "1234",
+	"year":"9"
 },{
 	"tableName": "student",
 	"name": "Men",
-	"password": "1234"
+	"password": "1234",
+	"year":"10"
 },{
 	"tableName": "student",
 	"name": "Women",
-	"password": "1234"
+	"password": "1234",
+	"year":"11"
 },{
 	"tableName": "student",
 	"name": "IT",
-	"password": "1234"
+	"password": "1234",
+	"year":"12"
+},
+{
+	"tableName":"student",
+	"name":"Test6",
+	"password":"1234",
+	"year":"6"
 },
 {
 	"tableName": "teacher",

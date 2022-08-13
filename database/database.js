@@ -40,6 +40,7 @@ connection.connect(function(err) {
         id INT NOT NULL AUTO_INCREMENT,
         name VARCHAR(20) NOT NULL,
         password VARCHAR(255) NOT NULL,
+        year INT NOT NULL,
         PRIMARY KEY(id)
     )`, (err, result) => {
             if (err) throw err;

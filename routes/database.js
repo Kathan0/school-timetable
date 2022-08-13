@@ -1,5 +1,6 @@
 import connection from '../app.js';
 import express from 'express';
+import { ExplainVerbosity } from 'mongodb';
 const dataRouter = express.Router();
 
 dataRouter
@@ -9,29 +10,38 @@ dataRouter
     .delete('/data', deleteData); //During withdrawal
 
 export function getData(req, res){
-    connection.query(`USE school`, (err, result)=>{
-        if(err) throw err;
-        console.log('Database in use');
-    })
     var data  = req.body;
+    let date = new Date();
 
     if(typeof data.name !== 'undefined' && typeof data.password !== 'undefined'){
         if(data.tableName == 'student'){
-         connection.query(`SELECT s.id FROM student s WHERE s.name = '${data.name}' AND s.password = '${data.password}'`, (err, result)=>{
+
+            connection.query(`USE school`, (err, result)=>{
+                if(err) throw err;
+                console.log("Database in use from getData at "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds()+" on "+("0" + date.getDate()).slice(-2)+"/"+("0" + (date.getMonth() + 1)).slice(-2)+"/"+date.getFullYear());
+            })
+
+         connection.query(`SELECT s.id FROM student s WHERE s.name = '${data.name}' AND s.password = '${data.password}' AND s.year = ${data.year}`, (err, result)=>{
             if(err) throw err;
 
+            var resultArray = Object.values(JSON.parse(JSON.stringify(result)));
+
             if(result.length > 0)
-            res.send({result, mesage: 1});
+            res.send({id: result[0].id, mesage: 1});
             else
             res.send({result, mesage: 0});
         })
     }
-    else {
+    else {        
+        connection.query(`USE school`, (err, result)=>{
+        if(err) throw err;
+        console.log("Database in use at "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds()+" on "+("0" + date.getDate()).slice(-2)+"/"+("0" + (date.getMonth() + 1)).slice(-2)+"/"+date.getFullYear());
+    })
          connection.query(`SELECT s.id FROM teacher s WHERE s.name = '${data.name}' AND s.password = '${data.password}'`, (err, result)=>{
             if(err) throw err;
 
             if(result.length > 0)
-            res.send({result, mesage: 1});
+            res.send({id: result[0].id, mesage: 1});
             else
             res.send({result, mesage: 0});
         })
@@ -41,27 +51,27 @@ export function getData(req, res){
             message: -1
         })
     }
-}
+} // Login for tudent and teacher
 
 export function postData(req, res) { //Working
-
-    connection.query(`USE school`, (err, result)=>{
-        if (err) throw err;
-        console.log('Database in use');
-    })
     var data = req.body;
+    let date = new Date();
+
+        connection.query(`USE school`, (err, result)=>{
+        if(err) throw err;
+        console.log("Database in use from postData at "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds()+" on "+("0" + date.getDate()).slice(-2)+"/"+("0" + (date.getMonth() + 1)).slice(-2)+"/"+date.getFullYear());
+    })
 
         for(var i=0; i<data.length; i++){
 
         var tableName = data[i].tableName;
-
         if(typeof data[i].teach_id === 'undefined' &&
         typeof data[i].stud_id === 'undefined' &&
         typeof data[i].course_id === 'undefined' &&
         typeof data[i].time_id === 'undefined' &&
         typeof data[i].room_number_id === 'undefined' ){ // Normal table fill up
 
-            if(typeof data[i].id === 'undefined' && typeof data[i].name === 'undefined'){ // Timeslot, classroom
+            if(typeof data[i].name === 'undefined'){ // Timeslot, classroom
 
                 if(typeof data[i].time_id === 'undefined' && data[i].tableName == 'classroom'){ // classroom
                     var block = `'${data[i].block}'`;
@@ -86,13 +96,14 @@ export function postData(req, res) { //Working
             } else {    // Student, Teacher, Course
                 var name = `'${data[i].name}'`;
 
-                if(typeof data[i].year === 'undefined') {   // Student, Teacher
+                if(typeof data[i].password !== 'undefined') {   // Student, Teacher
                     
                     if(tableName == "student"){    // Student
                         var password = `'${data[i].password}'`;
-                         connection.query(`INSERT INTO student(name, password) VALUES (${name}, ${password})`, (err, result)=>{
+                        var year = data[i].year;
+                         connection.query(`INSERT INTO student(name, password, year) VALUES (${name}, ${password}, ${year})`, (err, result)=>{
                             if(err) throw err;
-                            console.log(`Data added to student, named :${name} ${password} with auto Increment`)
+                            console.log(`Data added to student, named :${name} ${password} ${year} with auto Increment`)
                         })
 
                     } else { // Teacher
@@ -114,6 +125,7 @@ export function postData(req, res) { //Working
             }
             
         } else { // relation table fill up
+
             if(typeof data[i].course_id !== 'undefined'){ // takes, teaches, course_time_slot, class_used
                 var course_id = data[i].course_id;
 
@@ -162,11 +174,11 @@ export function postData(req, res) { //Working
             }
 
         }
-    }
-    res.json({
-        message: 1
-    })
-}
+     }
+     res.send({
+        message : 1
+     })
+} // Creating a database OR adding data to database
 
 export function patchData(req, res) {
     console.log("Patchdata accessed");
