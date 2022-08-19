@@ -10,11 +10,7 @@ teacherRouter
     .delete('/teacher', deleteTeacher);
 
 export function getTeacher(req, res) {
-    console.log("GetTeacher accessed");
-    res.json({
-        message: "getTeacher accessed",
-        id: 2
-    });
+    var data = req.body;
 }
 
 export function postTeacher(req, res) {

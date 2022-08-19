@@ -79,7 +79,6 @@ export function postData(req, res) { //Working
                     connection.query(`INSERT INTO classroom(block) VALUES (${block})`, (err, result)=>{
                         if(err) throw err;
                         console.log(`Data added to classroom, named : ${block}`)
-                        
                     })
 
                 } else if ( data[i].tableName == 'time_slot') { // Timeslot
@@ -89,7 +88,6 @@ export function postData(req, res) { //Working
                     connection.query(`INSERT INTO time_slot(time_slot , day) VALUES (${time_slot}, ${day})`, (err, result)=>{
                         if(err) throw err;
                         console.log(`Data added to time slot, named :${time_slot}, ${day} with auto Increment`)
-                        
                     })
                 }
 
@@ -118,7 +116,6 @@ export function postData(req, res) { //Working
                      connection.query(`INSERT INTO course(name, year) VALUES (${name}, ${year})`, (err, result)=>{
                         if(err) throw err;
                         console.log(`Data added to course, named :${name}, ${year} with auto increment`)
-                        
                     })
                 }
 
@@ -134,7 +131,6 @@ export function postData(req, res) { //Working
                      connection.query(`INSERT INTO teaches(teach_id, course_id) VALUES (${teach_id}, ${course_id})`, (err, result)=>{
                         if(err) throw err;
                         console.log(`Data added to teaches, named :${teach_id}, ${course_id}`)
-                        
                     })
                 } 
                 else if(typeof data[i].stud_id !== 'undefined') { // takes

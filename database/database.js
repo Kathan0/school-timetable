@@ -128,7 +128,35 @@ connection.connect(function(err) {
         PRIMARY KEY(course_id)
     )`, (err, result) => {
             if (err) throw err;
-            console.log("Table class_used created: Final Table");
+            console.log("Table class_used created");
+        })
+
+        connection.query(`CREATE TABLE addition(
+            stud_id INT NOT NULL,
+            course_id INT NOT NULL,
+            PRIMARY KEY(stud_id, course_id)
+        )`, (err, result) => {
+                if (err) throw err;
+                console.log("Table addition created");
+        })
+
+        connection.query(`CREATE TABLE substitution(
+            stud_id INT NOT NULL,
+            curr_course_id INT NOT NULL,
+            sub_course_id INT NOT NULL,
+            PRIMARY KEY(stud_id, curr_course_id, sub_course_id)
+        )`, (err, result) => {
+                if (err) throw err;
+                console.log("Table substitution created");
+        })
+
+        connection.query(`CREATE TABLE withdrawal(
+            stud_id INT NOT NULL,
+            course_id INT NOT NULL,
+            PRIMARY KEY(stud_id, course_id)
+        )`, (err, result) => {
+                if (err) throw err;
+                console.log("Table withdrawal created");
         })
 
         connection.query(`ALTER TABLE teaches ADD FOREIGN KEY(teach_id) REFERENCES teacher(id)`, (err, result)=>{
