@@ -1,4 +1,3 @@
-import { json } from 'body-parser';
 import express from 'express';
 import connection from '../app.js';
 const userRouter = express.Router();
@@ -9,7 +8,7 @@ userRouter
     .patch('/user', patchUser)
     .delete('/user', deleteUser);
 
-export function getUser(req, res) {
+export async function getUser(req, res) {
     let date = new Date();
 
     var data = req.body;
@@ -51,14 +50,39 @@ export function getUser(req, res) {
                 var resultArrayTakes = Object.values(JSON.parse(JSON.stringify(resultTakes)));
 
                 if(resultArrayTakes.length > 0){    // All courses which student has taken
-                                                    // Course time slot, class used, instructs, 
+                                                    // Course time slot: C_name, c_year, time_slot, day
+                                                    // instructs: c_name, c_year, teach_name from teach_id
+                    var instructs = [];
+                    var takes=[];
+                    var obj = [takes, instructs];
+                    
                     for(var i=0; i<resultArrayTakes.length; i++){
+
+                        connection.query(`
+                        SELECT ts.time_slot, ts.day, c.year, c.name
+                        FROM (course_time_slot cts INNER JOIN time_slot ts ON cts.time_id = ts.time_slot_id) INNER JOIN course c ON c.id = cts.course_id
+                        WHERE cts.course_id = ${resultArrayTakes[i].course_id}`, (err, result)=>{
+                            if(err) throw err
+                            var array1 = Object.values(JSON.parse(JSON.stringify(result)));
+                            obj[0].push(array1);
+                        })
+
+                        connection.query(`
+                        SELECT 
+                        FROM (((teacher t INNER JOIN teaches ts ON t.id = ts.teach_id) 
+                        INNER JOIN course_time_slot cts ON cts_course_id = ts.course_id) 
+                        INNER JOIN time_slot tis ON tis.time_slot_id = cts.time_id
+                        WHERE ts.course_id = ${resultArrayTakes[i].course_id}`, (err, result)=>{ //teacher , teaches, cts, time slot
+                            if(err) throw err
+                            var array2 = Object.values(JSON.parse(JSON.stringify(result)));
+                            obj[1].push(array2);
+                        })
                         
-
-                        let resultArray = await 
-
-
                     }
+                    setTimeout(()=>{res.send({
+                        obj,
+                        mesage: 1
+                    })}, 50*resultArrayTakes.length);
 
                 } else 
                     res.send({
@@ -66,6 +90,10 @@ export function getUser(req, res) {
                     })
             })
         })
+    }
+
+    else if(typeof data.type != 'undefined' && typeof data.type == 'addition' && typeof data.stud_id != 'undefined'){
+        
     }
 
     else {
@@ -430,6 +458,21 @@ export function deleteUser(req, res) { // message=> -1: invalid cred, -2: course
     } else res.send({
         message: -1
     })
+}
+
+async function resultTimeSlot(course_id){
+    connection.query(`
+    SELECT c.name, c.year, ts.time_slot, ts.day
+    FROM (course_time_slot cts INNER JOIN time_slot ts ON cts.time_id = ts.time_slot_id) INNER JOIN course c ON c.id = cts.course_id
+    WHERE cts.course_id = ${course_id}`, (err, result)=>{
+        if(err) throw err
+        var array = Object.values(JSON.parse(JSON.stringify(result)));
+        return array;
+    })
+}
+
+async function resultInstructs(stud_id, course_id){
+    connection.query(`SELECT * FROM takes`)
 }
 
 export default userRouter;
