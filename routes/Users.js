@@ -92,12 +92,122 @@ export async function getUser(req, res) {
         })
     }
 
-    else if(typeof data.type != 'undefined' && typeof data.type == 'addition' && typeof data.stud_id != 'undefined'){
-        
+    else if(typeof data.type != 'undefined' && data.type == 'addition' && typeof data.stud_id != 'undefined'){
+
+        connection.query(`USE school`, (err, result)=>{
+            if(err) throw err
+            console.log("Database in use from getUser at "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds()+" on "+("0" + date.getDate()).slice(-2)+"/"+("0" + (date.getMonth() + 1)).slice(-2)+"/"+date.getFullYear());
+            
+            connection.query(`SELECT a.course_id FROM addition a WHERE a.stud_id = ${data.stud_id}`, (err, resultAddition)=>{
+                if(err) throw err
+                var resultArrayAddition = Object.values(JSON.parse(JSON.stringify(resultAddition)))
+
+                if(resultArrayAddition.length> 0){
+
+                    var obj = []
+                    for(var i=0; i<resultArrayAddition.length; i++){
+
+                        connection.query(`
+                        SELECT c.name AS course_name, c.year AS course_year, t.name AS teach_name
+                        FROM ((addition a INNER JOIN course c ON a.course_id = c.id) INNER JOIN teaches ts ON ts.course_id = c.id) INNER JOIN teacher t ON t.id = ts.teach_id
+                        WHERE a.stud_id = ${data.stud_id}`, (err, resultFinal)=>{
+                            if(err) throw err
+
+                            obj.push(Object.values(JSON.parse(JSON.stringify(resultFinal))));
+                        })
+
+                    }
+                    setTimeout(()=>console.log(obj), 100);
+                    res.send({message: 1});
+
+                } else res.send({
+                    message: 0
+                })
+            })
+        })
+    }
+
+    else if(typeof data.type != 'undefined' && data.type == 'withdrawal' && typeof data.stud_id != 'undefined'){
+
+        connection.query(`USE school`, (err, result)=>{
+            if(err) throw err
+            console.log("Database in use from getUser at "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds()+" on "+("0" + date.getDate()).slice(-2)+"/"+("0" + (date.getMonth() + 1)).slice(-2)+"/"+date.getFullYear());
+            
+            connection.query(`SELECT a.course_id FROM withdrawal a WHERE a.stud_id = ${data.stud_id}`, (err, resultWithdrawal)=>{
+                if(err) throw err
+                var resultArrayWithdrawal = Object.values(JSON.parse(JSON.stringify(resultWithdrawal)))
+
+                if(resultArrayWithdrawal.length> 0){
+
+                    var obj = []
+                    for(var i=0; i<resultArrayWithdrawal.length; i++){
+
+                        connection.query(`
+                        SELECT c.name AS course_name, c.year AS course_year, t.name AS teach_name
+                        FROM ((withdrawal a INNER JOIN course c ON a.course_id = c.id) INNER JOIN teaches ts ON ts.course_id = c.id) INNER JOIN teacher t ON t.id = ts.teach_id
+                        WHERE a.stud_id = ${data.stud_id}`, (err, resultFinal)=>{
+                            if(err) throw err
+
+                            obj.push(Object.values(JSON.parse(JSON.stringify(resultFinal))));
+                        })
+
+                    }
+                    setTimeout(()=>console.log(obj), 100);
+                    res.send({message: 1});
+
+                } else res.send({
+                    message: 0
+                })
+            })
+        })
+    }
+
+    else if(typeof data.type != 'undefined' && data.type == 'substitution' && typeof data.stud_id != 'undefined'){
+
+        connection.query(`USE school`, (err, result)=>{
+            if(err) throw err
+            console.log("Database in use from getUser at "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds()+" on "+("0" + date.getDate()).slice(-2)+"/"+("0" + (date.getMonth() + 1)).slice(-2)+"/"+date.getFullYear());
+            
+            connection.query(`SELECT a.course_id FROM substitution s WHERE s.stud_id = ${data.stud_id}`, (err, resultSubstitution)=>{
+                if(err) throw err
+                var resultArraySubstitution = Object.values(JSON.parse(JSON.stringify(resultSubstitution)))
+
+                if(resultArraySubstitution.length> 0){
+
+                    var obj = []
+                    for(var i=0; i<resultArraySubstitution.length; i++){
+
+                        connection.query(`
+                        SELECT c.name AS course_name, c.year AS course_year, t.name AS teach_name
+                        FROM ((substitution s INNER JOIN course c ON s.curr_course_id = c.id) INNER JOIN teaches ts ON ts.course_id = c.id) INNER JOIN teacher t ON t.id = ts.teach_id
+                        WHERE s.stud_id = ${data.stud_id}`, (err, resultFinal)=>{
+                            if(err) throw err
+
+                            obj.push(Object.values(JSON.parse(JSON.stringify(resultFinal))));
+                        })
+
+                        connection.query(`
+                        SELECT c.name AS course_name, c.year AS course_year, t.name AS teach_name
+                        FROM ((substitution s INNER JOIN course c ON s.sub_course_id = c.id) INNER JOIN teaches ts ON ts.course_id = c.id) INNER JOIN teacher t ON t.id = ts.teach_id
+                        WHERE s.stud_id = ${data.stud_id}`, (err, resultFinal)=>{
+                            if(err) throw err
+
+                            obj.push(Object.values(JSON.parse(JSON.stringify(resultFinal))));
+                        })
+
+                    }
+                    setTimeout(()=>console.log(obj), 100);
+                    res.send({message: 1});
+
+                } else res.send({
+                    message: 0
+                })
+            })
+        })
     }
 
     else {
-        console.log("Invalid credentials");
+        console.log("Invalid credentials in getUser");
         res.send({
             message: -1
         })
@@ -217,20 +327,25 @@ export function postUser(req, res) { // Update password for user, Register for t
                                 connection.query(`SELECT * FROM addition a WHERE a.stud_id = ${data.stud_id} AND a.course_id = ${resultArrayCourse[0].id}`, (err, result)=>{
                                     if(err) throw err;
                                     var resultArrayAddition = Object.values(JSON.parse(JSON.stringify(result)));
-                                    if(resultArrayAddition.length == 0)
-                                    connection.query(`INSERT INTO takes(stud_id, course_id) VALUES (${data.stud_id}, ${resultArrayCourse[0].id})`, (err, result)=>{
-                                    if(err) throw err;
 
+                                    if(resultArrayAddition.length == 0)
+
+                                    // Admin
+                                    // connection.query(`INSERT INTO takes(stud_id, course_id) VALUES (${data.stud_id}, ${resultArrayCourse[0].id})`, (err, result)=>{
+                                    // if(err) throw err;
+                                    //
+                                    
                                         connection.query(`INSERT INTO addition(stud_id, course_id) VALUES(${data.stud_id}, ${resultArrayCourse[0].id})`, (err, result)=>{
                                             if(err) throw err;
+
+                                            console.log("Course with name:"+data.course_name+", year:"+data.course_year+" and course id:"+resultArrayCourse[0].id+" Successfully added to your course, user id:"+data.stud_id);
+                                            res.send({
+                                                message: 1
+                                            })
+
                                         })
-                                        
-                                        console.log("Course with name:"+data.course_name+", year:"+data.course_year+" and course id:"+resultArrayCourse[0].id+" Successfully added to your course, user id:"+data.stud_id);
-                                        console.log("-------------------------------------------------")
-                                        res.send({
-                                            message: 1
-                                        })
-                                })
+                                    
+                                // })
                                 else res.send({
                                     message: -2
                                 })
@@ -248,20 +363,20 @@ export function postUser(req, res) { // Update password for user, Register for t
                                 if(resultArrayAddition.length == 0)
 
                                 //  Admin
-                                connection.query(`INSERT INTO takes(stud_id, course_id) VALUES (${data.stud_id}, ${resultArrayCourse[0].id})`, (err, result)=>{
-                                    if(err) throw err;
+                                // connection.query(`INSERT INTO takes(stud_id, course_id) VALUES (${data.stud_id}, ${resultArrayCourse[0].id})`, (err, result)=>{
+                                //     if(err) throw err;
                                 //
 
 
                                 connection.query(`INSERT INTO addition(stud_id, course_id) VALUES(${data.stud_id}, ${resultArrayCourse[0].id})`, (err, result)=>{
                                         if(err) throw err;
-                                    })
 
-                                console.log("Course with name:"+data.course_name+", year:"+data.course_year+" and course id:"+resultArrayCourse[0].id+" Successfully added to your course, user id:"+data.stud_id);
-                                res.send({
-                                    message: 1
-                                })
-                            })
+                                        console.log("Course with name:"+data.course_name+", year:"+data.course_year+" and course id:"+resultArrayCourse[0].id+" Successfully added to your course, user id:"+data.stud_id);
+                                        res.send({
+                                            message: 1
+                                        })
+                                    })
+                            // })
                             else res.send({
                                 messsage: -2
                             })
@@ -334,9 +449,9 @@ export function patchUser(req, res) { //Substitution message: 1=> Successful, 0=
                                                     if(resultArrayWith.length == 0){
 
                                                         // Give the admin previleges
-                                                        connection.query(`UPDATE takes t SET t.course_id = ${resultArraySub[0].id} WHERE t.course_id = ${resultArrayCurr[0].id} AND t.stud_id = ${data.stud_id}`, (err, result)=>{
-                                                            if(err) throw err;
-                                                        })
+                                                        // connection.query(`UPDATE takes t SET t.course_id = ${resultArraySub[0].id} WHERE t.course_id = ${resultArrayCurr[0].id} AND t.stud_id = ${data.stud_id}`, (err, result)=>{
+                                                        //     if(err) throw err;
+                                                        // })
                                                         //
 
                                                         connection.query(`INSERT INTO substitution(stud_id, curr_course_id, sub_course_id) VALUES (${data.stud_id}, ${resultArrayCurr[0].id}, ${resultArraySub[0].id})`, (err, result)=>{
@@ -357,25 +472,17 @@ export function patchUser(req, res) { //Substitution message: 1=> Successful, 0=
                                                 res.send({
                                                     message: -3 // Sub request already done
                                                 })
-                                        
                                         })
-
-
-
-
-
                                     } else
                                         res.send({
                                             message: -2 //sub_course already exist
                                         })
-                                
                                 })
                             } else
                                 res.send({
                                     message: 0 //curr_course doesnt exist
                                 })
                         })
-
                 })
             })
         }
@@ -423,10 +530,10 @@ export function deleteUser(req, res) { // message=> -1: invalid cred, -2: course
         
 
                                             // ADMIN prev
-                                            connection.query(`DELETE FROM takes t WHERE t.stud_id = ${data.stud_id} AND t.course_id = ${resultArrayCid[0].id}`, (err, resultFinal)=>{
-                                                if(err) throw err;
-                                                console.log("Course with name:"+data.course_name+", year:"+data.course_year+" and course id:"+resultArrayCid[0].id+" Successfully REMOVED to your course, user id:"+data.stud_id)
-                                            })
+                                            // connection.query(`DELETE FROM takes t WHERE t.stud_id = ${data.stud_id} AND t.course_id = ${resultArrayCid[0].id}`, (err, resultFinal)=>{
+                                            //     if(err) throw err;
+                                            //     console.log("Course with name:"+data.course_name+", year:"+data.course_year+" and course id:"+resultArrayCid[0].id+" Successfully REMOVED to your course, user id:"+data.stud_id)
+                                            // })
                                             //
 
                                             connection.query(`INSERT INTO withdrawal(stud_id, course_id) VALUES (${data.stud_id}, ${resultArrayCid[0].id})`, (err, resultFinal)=>{

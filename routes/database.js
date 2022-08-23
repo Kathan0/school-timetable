@@ -94,7 +94,7 @@ export function postData(req, res) { //Working
             } else {    // Student, Teacher, Course
                 var name = `'${data[i].name}'`;
 
-                if(typeof data[i].password !== 'undefined') {   // Student, Teacher
+                if(typeof data[i].password !== 'undefined' || typeof data[i].password1 !== 'undefined') {   // Student, Teacher
                     
                     if(tableName == "student"){    // Student
                         var password = `'${data[i].password}'`;
@@ -104,10 +104,17 @@ export function postData(req, res) { //Working
                             console.log(`Data added to student, named :${name} ${password} ${year} with auto Increment`)
                         })
 
-                    } else { // Teacher
+                    } else if(data[i].tableName == "teacher") { // Teacher
                          connection.query(`INSERT INTO teacher(name, password) VALUES (${name}, '${data[i].password}')`, (err, result)=>{
                             if(err) throw err;
                             console.log(`Data added to teacher, named : ${name}, ${password} with auto increment`)
+                        })
+                    } else if(data[i].tableName == "admin") { // Admin
+                        var password = `'${data[i].password}'`;
+                        var password1 = `'${data[i].password1}'`;
+                        connection.query(`INSERT INTO admin(name, password1, password2) VALUES (${name}, ${password}, ${password1})`, (err, result)=>{
+                            if(err) throw err;
+                            console.log(`Data added to teacher, named : ${name}, ${password}, ${password1} with auto increment`)
                         })
                     }
 

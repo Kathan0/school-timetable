@@ -159,6 +159,17 @@ connection.connect(function(err) {
                 console.log("Table withdrawal created");
         })
 
+        connection.query(`CREATE TABLE admin(
+        id INT NOT NULL AUTO_INCREMENT,
+        name VARCHAR(20) NOT NULL,
+        password1 VARCHAR(20) NOT NULL,
+        password2 VARCHAR(20) NOT NULL,
+        PRIMARY KEY(id)
+        )`, (err, result)=>{
+            if(err) throw err
+            console.log("Table admin created");
+        })
+
         connection.query(`ALTER TABLE teaches ADD FOREIGN KEY(teach_id) REFERENCES teacher(id)`, (err, result)=>{
             if(err) throw err;
             console.log("Foreign Key from teaches to teacher added");

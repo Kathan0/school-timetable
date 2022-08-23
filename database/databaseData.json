@@ -72,6 +72,13 @@
 }
 
 ,{
+	"tableName": "admin",
+	"name":"root",
+	"password":"1234",
+	"password1":"5678"
+}
+
+,{
 	"tableName": "course",
 	"name": "Physics",
 	"year":"6"
