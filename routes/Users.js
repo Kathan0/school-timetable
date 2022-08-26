@@ -12,9 +12,7 @@ export async function getUser(req, res) {
     let date = new Date();
 
     var data = req.body;
-    if(typeof data.type != 'undefined' && data.type == 'login' 
-    && typeof data.name != 'undefined' 
-    && typeof data.password != 'undefined'){    
+    if(typeof data.type != 'undefined' && data.type == 'login' && typeof data.name != 'undefined' && typeof data.password != 'undefined'){    
         
         connection.query(`USE school`, (err, result)=>{
         if(err) throw err;
@@ -35,7 +33,7 @@ export async function getUser(req, res) {
             }
             else
             res.send({
-                message :0 
+                message: 0
             })
         })
     }
@@ -52,37 +50,30 @@ export async function getUser(req, res) {
                 if(resultArrayTakes.length > 0){    // All courses which student has taken
                                                     // Course time slot: C_name, c_year, time_slot, day
                                                     // instructs: c_name, c_year, teach_name from teach_id
-                    var instructs = [];
-                    var takes=[];
-                    var obj = [takes, instructs];
+                    var obj = [];
                     
-                    for(var i=0; i<resultArrayTakes.length; i++){
+                    for(var i=0; i<resultArrayTakes.length; i++){ //time_slot, day, c name, year, instructor, classroom, block,
 
                         connection.query(`
-                        SELECT ts.time_slot, ts.day, c.year, c.name
-                        FROM (course_time_slot cts INNER JOIN time_slot ts ON cts.time_id = ts.time_slot_id) INNER JOIN course c ON c.id = cts.course_id
-                        WHERE cts.course_id = ${resultArrayTakes[i].course_id}`, (err, result)=>{
+                        SELECT ts.time_slot, ts.day, c.year, c.name, t.name, cls.room_number, cls.block
+                        FROM (((((
+                            course_time_slot cts INNER JOIN time_slot ts ON cts.time_id = ts.time_slot_id)
+                            INNER JOIN course c ON c.id = cts.course_id)
+                            INNER JOIN teaches tch ON tch.course_id = c.id)
+                            INNER JOIN class_used cu ON cu.course_id = c.id)
+                            INNER JOIN classroom cls ON cls.room_number = cu.room_number_id)
+                            INNER JOIN teacher t ON t.id = tch.teach_id
+                        WHERE c.id = ${resultArrayTakes[i].course_id}`, (err, resultCombine)=>{ //teacher , teaches, cts, time slot
                             if(err) throw err
-                            var array1 = Object.values(JSON.parse(JSON.stringify(result)));
-                            obj[0].push(array1);
-                        })
-
-                        connection.query(`
-                        SELECT 
-                        FROM (((teacher t INNER JOIN teaches ts ON t.id = ts.teach_id) 
-                        INNER JOIN course_time_slot cts ON cts_course_id = ts.course_id) 
-                        INNER JOIN time_slot tis ON tis.time_slot_id = cts.time_id
-                        WHERE ts.course_id = ${resultArrayTakes[i].course_id}`, (err, result)=>{ //teacher , teaches, cts, time slot
-                            if(err) throw err
-                            var array2 = Object.values(JSON.parse(JSON.stringify(result)));
-                            obj[1].push(array2);
+                            var arrayFinal = Object.values(JSON.parse(JSON.stringify(resultCombine)));
+                            obj.push(arrayFinal);
                         })
                         
                     }
                     setTimeout(()=>{res.send({
                         obj,
                         mesage: 1
-                    })}, 50*resultArrayTakes.length);
+                    })}, 300*resultArrayTakes.length);
 
                 } else 
                     res.send({
@@ -168,7 +159,7 @@ export async function getUser(req, res) {
             if(err) throw err
             console.log("Database in use from getUser at "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds()+" on "+("0" + date.getDate()).slice(-2)+"/"+("0" + (date.getMonth() + 1)).slice(-2)+"/"+date.getFullYear());
             
-            connection.query(`SELECT a.course_id FROM substitution s WHERE s.stud_id = ${data.stud_id}`, (err, resultSubstitution)=>{
+            connection.query(`SELECT s.curr_course_id, s.sub_course_id FROM substitution s WHERE s.stud_id = ${data.stud_id}`, (err, resultSubstitution)=>{
                 if(err) throw err
                 var resultArraySubstitution = Object.values(JSON.parse(JSON.stringify(resultSubstitution)))
 
@@ -362,11 +353,6 @@ export function postUser(req, res) { // Update password for user, Register for t
                                 var resultArrayAddition = Object.values(JSON.parse(JSON.stringify(result)));
                                 if(resultArrayAddition.length == 0)
 
-                                //  Admin
-                                // connection.query(`INSERT INTO takes(stud_id, course_id) VALUES (${data.stud_id}, ${resultArrayCourse[0].id})`, (err, result)=>{
-                                //     if(err) throw err;
-                                //
-
 
                                 connection.query(`INSERT INTO addition(stud_id, course_id) VALUES(${data.stud_id}, ${resultArrayCourse[0].id})`, (err, result)=>{
                                         if(err) throw err;
@@ -448,12 +434,6 @@ export function patchUser(req, res) { //Substitution message: 1=> Successful, 0=
 
                                                     if(resultArrayWith.length == 0){
 
-                                                        // Give the admin previleges
-                                                        // connection.query(`UPDATE takes t SET t.course_id = ${resultArraySub[0].id} WHERE t.course_id = ${resultArrayCurr[0].id} AND t.stud_id = ${data.stud_id}`, (err, result)=>{
-                                                        //     if(err) throw err;
-                                                        // })
-                                                        //
-
                                                         connection.query(`INSERT INTO substitution(stud_id, curr_course_id, sub_course_id) VALUES (${data.stud_id}, ${resultArrayCurr[0].id}, ${resultArraySub[0].id})`, (err, result)=>{
                                                             if(err) throw err;
                                                             console.log(`Data added after substitution from \n id: `+resultArrayCurr[0].id+` to `+resultArraySub[0].id+`\n name:`+data.curr_course_name+` to `+data.sub_course_name+`\n year:`+data.curr_course_year+` to `+data.sub_course_year+`\n student id:`+data.stud_id);
@@ -522,22 +502,17 @@ export function deleteUser(req, res) { // message=> -1: invalid cred, -2: course
                                 var resultArraySub = Object.values(JSON.parse(JSON.stringify(resultSub)));
                                 if(resultArraySub.length == 0){
 
-                                    connection.query(`SELECT * FROM withdraw w WHERE w.stud_id = ${data.stud_id} AND w.course_id = ${resultArrayCid[0].id}`, (err, resultWith)=>{
+                                    connection.query(`SELECT * FROM withdrawal w WHERE w.stud_id = ${data.stud_id} AND w.course_id = ${resultArrayCid[0].id}`, (err, resultWith)=>{
                                         if(err) throw err;
                                         var resultArrayWith = Object.values(JSON.parse(JSON.stringify(resultWith)));
 
                                         if(resultArrayWith.length == 0){
-        
-
-                                            // ADMIN prev
-                                            // connection.query(`DELETE FROM takes t WHERE t.stud_id = ${data.stud_id} AND t.course_id = ${resultArrayCid[0].id}`, (err, resultFinal)=>{
-                                            //     if(err) throw err;
-                                            //     console.log("Course with name:"+data.course_name+", year:"+data.course_year+" and course id:"+resultArrayCid[0].id+" Successfully REMOVED to your course, user id:"+data.stud_id)
-                                            // })
-                                            //
 
                                             connection.query(`INSERT INTO withdrawal(stud_id, course_id) VALUES (${data.stud_id}, ${resultArrayCid[0].id})`, (err, resultFinal)=>{
                                                 if(err) throw err;
+                                            })
+                                            res.send({
+                                                message: 1
                                             })
                                         
                                         }
@@ -565,21 +540,6 @@ export function deleteUser(req, res) { // message=> -1: invalid cred, -2: course
     } else res.send({
         message: -1
     })
-}
-
-async function resultTimeSlot(course_id){
-    connection.query(`
-    SELECT c.name, c.year, ts.time_slot, ts.day
-    FROM (course_time_slot cts INNER JOIN time_slot ts ON cts.time_id = ts.time_slot_id) INNER JOIN course c ON c.id = cts.course_id
-    WHERE cts.course_id = ${course_id}`, (err, result)=>{
-        if(err) throw err
-        var array = Object.values(JSON.parse(JSON.stringify(result)));
-        return array;
-    })
-}
-
-async function resultInstructs(stud_id, course_id){
-    connection.query(`SELECT * FROM takes`)
 }
 
 export default userRouter;

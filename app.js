@@ -4,13 +4,13 @@ const require = createRequire(import.meta.url);
 import userRouter  from './routes/Users.js'
 import teacherRouter from './routes/Teacher.js'
 import dataRouter from './routes/database.js';
+import adminRouter from './routes/Admin.js';
 
 import {connection} from './connection.js';
 
 const express = require('express');
 const port = 4000;
 const app = express();
-const mysql = require('mysql');
 
 
 const bodyParser = require('body-parser');
@@ -21,6 +21,7 @@ app.use(bodyParser.json())
 app.use('/', userRouter);
 app.use('/', teacherRouter);
 app.use('/', dataRouter);
+app.use('/', adminRouter);
 
 export default connection;
 
