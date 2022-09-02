@@ -37,12 +37,12 @@ function onSubmitStudent(){
         var data = res.data;
         switch(data.message){
             case 1:{
-                localStorage.setItem("ID", data.id);
+                localStorage.setItem("stud_id", data.id);
                 console.log(localStorage);
-                // var loc = window.location.pathname;
-                // var dir = loc.substring(0, loc.lastIndexOf('/'));
-                // dir += "/course.html";
-                // location.href = dir;
+                var loc = window.location.pathname;
+                var dir = loc.substring(0, loc.lastIndexOf('/'));
+                dir += "/course.html";
+                window.top.location.href = dir;
                 break;
             }
             case -1:{
@@ -64,7 +64,7 @@ function onSubmitTeacher(){
     
     var name = document.getElementById("Username").value;
     var password = document.getElementById("Password").value;
-    var data = {name: name, password: password}
+    var data = {name: name, password: password, type:"login"}
     let config = {
         headers: {
           "Access-Control-Allow-Origin": "*",
@@ -73,10 +73,30 @@ function onSubmitTeacher(){
       }
     let URL = `http://localhost:4000/teacher`;
 
-    axios.get(URL, data, config)
+    axios.post(URL, data, config)
     .then(res=>{
         var data = res.data;
-        console.log(data);
+        switch(data.message){
+            case 1:{
+                localStorage.setItem("teach_id", data.id);
+                console.log(localStorage);
+                var loc = window.location.pathname;
+                var dir = loc.substring(0, loc.lastIndexOf('/'));
+                dir += "/course.html";
+                window.top.location.href = dir;
+                break;
+            }
+            case -1:{
+                alert("Please fill details completely");
+                break
+            }
+            case 0:{
+                alert("INCORRECT! Name and password not matching")
+                break;
+            }
+        }
+
+
     })
     .catch(err=>console.group(err))
     
@@ -86,19 +106,38 @@ function onSubmitAdmin(){
     var name = document.getElementById("Username").value;
     var password1 = document.getElementById("Password1").value;
     var password2 = document.getElementById("Password2").value;
-    var data = {name: name, password1: password1, password2: password2}
+    var data = {name: name, password1: password1, password2: password2, type:"login"}
     let config = {
         headers: {
           "Access-Control-Allow-Origin": "*",
           "Content-Type": "application/json"
         }
       }
-    let URL = `http://localhost:4000/teacher`;
+    let URL = `http://localhost:4000/admin`;
 
-    axios.get(URL, data, config)
+    axios.post(URL, data, config)
     .then(res=>{
         var data = res.data;
         console.log(data);
+        switch(data.message){
+            case 1:{
+                localStorage.setItem("admin_id", data.id);
+                console.log(localStorage);
+                var loc = window.location.pathname;
+                var dir = loc.substring(0, loc.lastIndexOf('/'));
+                dir += "/course.html";
+                window.top.location.href = dir;
+                break;
+            }
+            case -1:{
+                alert("Please fill details completely");
+                break
+            }
+            case 0:{
+                alert("INCORRECT! Name and password not matching")
+                break;
+            }
+        }
     })
     .catch(err=>console.group(err))
 }

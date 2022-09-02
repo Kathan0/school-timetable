@@ -32,7 +32,7 @@ export function getUser(req, res) { // Login, Details for User, substitution. ad
                     for(var i=0; i<resultArrayTakes.length; i++){ //time_slot, day, c name, year, instructor, classroom, block,
 
                         connection.query(`
-                        SELECT ts.time_slot, ts.day, c.year, c.name, t.name, cls.room_number, cls.block
+                        SELECT ts.time_slot, ts.day, c.year, c.name as course_name, t.name as teach_name, cls.room_number, cls.block
                         FROM (((((
                             course_time_slot cts INNER JOIN time_slot ts ON cts.time_id = ts.time_slot_id)
                             INNER JOIN course c ON c.id = cts.course_id)
@@ -40,7 +40,8 @@ export function getUser(req, res) { // Login, Details for User, substitution. ad
                             INNER JOIN class_used cu ON cu.course_id = c.id)
                             INNER JOIN classroom cls ON cls.room_number = cu.room_number_id)
                             INNER JOIN teacher t ON t.id = tch.teach_id
-                        WHERE c.id = ${resultArrayTakes[i].course_id}`, (err, resultCombine)=>{ //teacher , teaches, cts, time slot
+                        WHERE c.id = ${resultArrayTakes[i].course_id}
+                        ORDER BY ts.time_slot`, (err, resultCombine)=>{ //teacher , teaches, cts, time slot
                             if(err) throw err
                             var arrayFinal = Object.values(JSON.parse(JSON.stringify(resultCombine)));
                             obj.push(arrayFinal);
@@ -49,7 +50,7 @@ export function getUser(req, res) { // Login, Details for User, substitution. ad
                     }
                     setTimeout(()=>{res.send({
                         obj,
-                        mesage: 1
+                        message: 1
                     })}, 300*resultArrayTakes.length);
 
                 } else 

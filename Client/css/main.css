@@ -1,17 +1,23 @@
-
+body{
+    font-family: 'Courier New', Courier, monospace !important;
+}
 .htmlPage{
     height:700px;
     width: 100%;
+    font-family: 'Courier New', Courier, monospace;
 }
 #button{
     display: flex;
     flex-direction: column;
     border: none;
-    width: 100px; 
+    width: 400px; 
     padding: 30px;  
     border-radius: 15px ;  
     align-items: center;
     background-color: rgb(246, 236, 223);
+    font-size: large;
+    font-weight: bold;
+    font-family: 'Courier New', Courier, monospace;
 }
 #button:hover{
     background-color:hsl(white, black, black);

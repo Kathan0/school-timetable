@@ -15,7 +15,10 @@ export function getAdmin(req, res){
 
 export function postAdmin(req, res){
 
-    if(typeof req.body.type !== 'undefined' && req.body.type == 'validate'){
+    var data = req.body;
+    console.log(data);
+
+    if(typeof data.type !== 'undefined' && data.type == 'validate'){
 
         connection.query(`USE school`,(err, result)=>{
             if(err) throw err;
@@ -101,7 +104,34 @@ export function postAdmin(req, res){
             message: 1
         })
 
-    } else res.send({
+    } 
+    
+    else if(typeof data.type != "undefined" && data.type == 'login' && typeof data.name != "undefined" && typeof data.password1 != "undefined" && typeof data.password2 != "undefined"){
+        let date = new Date();
+        connection.query(`USE school`, (err, result)=>{
+        if(err) throw err;
+        console.log("Database in use from getUser at "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds()+" on "+("0" + date.getDate()).slice(-2)+"/"+("0" + (date.getMonth() + 1)).slice(-2)+"/"+date.getFullYear());
+        })
+            connection.query(` 
+            SELECT s.id 
+            FROM admin s
+            WHERE s.name = '${data.name}' AND s.password1 = '${data.password1}' AND s.password2 = '${data.password2}'`, (err, result)=>{
+            if(err) throw err;
+            var resultArray = Object.values(JSON.parse(JSON.stringify(result)));
+            if(resultArray.length == 1){
+                console.log("Admin "+resultArray[0].id+" is recognised");
+                res.send({
+                    id: resultArray[0].id,
+                    message: 1
+            })
+            }
+            else
+            res.send({
+                message: 0
+            })
+        })
+    }
+    else res.send({
         message: -1
     })
 

@@ -13,8 +13,9 @@ teacherRouter
     .delete('/teacher',  deleteTeacher);
 
 export function getTeacher(req, res) {
-    if(typeof req.body.teach_id != 'undefined' && req.body.type != 'undefined' && req.body.type == 'details'){ //course, time_slot and room number
-        var data = req.body;
+    if(typeof req.query.teach_id != 'undefined' && req.query.type != 'undefined' && req.query.type == 'details'){ //course, time_slot and room number
+        
+        var data = req.query;
         let date = new Date();
         connection.query(`USE school`, (err, result)=>{
             if(err) throw err;
@@ -29,7 +30,7 @@ export function getTeacher(req, res) {
                             var obj = []
                             for(var i=0; i<resultArrayCourse.length; i++)
                             connection.query(`
-                            SELECT ts.time_slot, ts.day, c.name, c.year, cl.room_number, cl.block
+                            SELECT ts.time_slot, ts.day, c.name as course_name, c.year, cl.room_number, cl.block
                             FROM ((((course c INNER JOIN teaches tch ON tch.course_id = c.id AND tch.teach_id = ${data.teach_id})
                             INNER JOIN course_time_slot cts ON cts.course_id = c.id)
                             INNER JOIN class_used cu ON cu.course_id = c.id)
@@ -42,10 +43,10 @@ export function getTeacher(req, res) {
                                 obj.push(resultArrayCombine);
                             })
 
-                            setTimeout(()=>{console.log(obj), res.send({
+                            setTimeout(()=>res.send({
                                 obj, 
                                 message: 1
-                            })}, 200*(resultArrayCourse.length))
+                            }), 200*(resultArrayCourse.length))
 
 
                         } else res.send({
@@ -61,11 +62,37 @@ export function getTeacher(req, res) {
 }
 
 export function postTeacher(req, res) {
-    console.log("PostTeacher accessed");
-    res.json({
-        message: "PostTeacher accessed ",
-        id: 2
-    });
+    var data = req.body;
+    if(typeof data.type != 'undefined' && data.type == 'login' && typeof data.name != 'undefined' && typeof data.password != 'undefined'){    
+        
+        let date = new Date();
+        connection.query(`USE school`, (err, result)=>{
+        if(err) throw err;
+        console.log("Database in use from getUser at "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds()+" on "+("0" + date.getDate()).slice(-2)+"/"+("0" + (date.getMonth() + 1)).slice(-2)+"/"+date.getFullYear());
+        })
+            connection.query(` 
+            SELECT s.id 
+            FROM teacher s
+            WHERE s.name = '${data.name}' AND s.password = '${data.password}';`, (err, result)=>{
+            if(err) throw err;
+            var resultArray = Object.values(JSON.parse(JSON.stringify(result)));
+            if(resultArray.length == 1){
+                console.log("Teacher  "+resultArray[0].id+" is recognised");
+                res.send({
+                    id: resultArray[0].id,
+                    message: 1
+            })
+            }
+            else
+            res.send({
+                message: 0
+            })
+        })
+    } 
+    
+    else res.send({
+        message: -1
+    })
 }
 
 export function patchTeacher(req, res) {

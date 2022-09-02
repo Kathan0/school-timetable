@@ -9,61 +9,6 @@
         <script src="./index.js"></script>
     </head>
 
-    <script>
-    //     if(typeof parse(sessionStorage.getItem("stud_id")) != 'undefined')
-    //         var stud_id = parse(sessionStorage.getItem("stud_id"));
-    //     if(typeof parse(sessionStorage.getItem("teach_id")) != 'undefined')
-    //         var teach_id = parse(sessionStorage.getItem("teach_id"));
-    
-    // var tab = ``;
-    // if(typeof stud_id != 'undefined'){
-    //     // const URL = `http://localhost:4000/user`
-    //     // let config = {
-    //     //     headers: {
-    //     //     "Access-Control-Allow-Origin": "*",
-    //     //     "Content-Type": "application/json"
-    //     //     }
-    //     // }
-    //     // let data = {
-    //     //     stud_id: stud_id,
-    //     //     type: "details"
-    //     // }
-    //     // axios.get(URL, data, config)
-    //     // .then(res=>{
-    //     //     var data = res.data;
-    //     //     console.log(data);
-    //     // })
-    //     // .catch(err=>console.log(err));
-
-    // } else {
-    //     const URL = `http://localhost:4000/teacher`
-    //     let config = {
-    //         headers: {
-    //         "Access-Control-Allow-Origin": "*",
-    //         "Content-Type": "application/json"
-    //         }
-    //     }
-    //     let data = {
-    //         stud_id: teach_id,
-    //         type: "details"
-    //     }
-    //     axios.get(URL, data, config)
-    //     .then(res=>{
-    //         var data = res.data;
-    //         console.log(data);
-    //         //switch(parseInt(data.message))
-    //     })
-    //     .catch(err=>console.log(err));
-    // }
-    
-
-    // console.log(tab)
-    // document.getElementById("table").innerHTML = tab;
-    // console.log(Username);
-    // document.getElementById("Welcome").innerHTML = `<h1>Welcome ${Username}</h1>`;
-
-    </script>
-
 
     <body>
         <div>
@@ -72,81 +17,180 @@
                 <ul><button id="nav-btn">Profile</button></ul>
             </nav>
         </div>
-        <div class="container">
+        <div class="container-main">
             <div class="table-course">
                 <table class="table-course-main">
-                    <div>
-                        <tr>
-                            <th>Monday</th>
-                            <th>Tuesday</th>
-                            <th>Wednesday</th>
-                            <th>Thursday</th>
-                            <th>Friday</th>
-                            <th>Saturday</th>
-                        </tr>
-                    </div>
-                    <div>
-                        <tr>
-                            <th>Physics</th>
-                            <th>Physics</th>
-                            <th>Physics</th>
-                            <th>Physics</th>
-                            <th>Physics</th>
-                            <th>Physics</th>
-                        </tr>
-                        <tr>
-                            <th>Physics</th>
-                            <th>Physics</th>
-                            <th>Physics</th>
-                            <th>Physics</th>
-                            <th>Physics</th>
-                            <th>Physics</th>
-                        </tr>
-                        <tr>
-                            <th>Physics</th>
-                            <th>Physics</th>
-                            <th>Physics</th>
-                            <th>Physics</th>
-                            <th>Physics</th>
-                            <th>Physics</th>
-                        </tr>
-                        <tr>
-                            <th>Physics</th>
-                            <th>Physics</th>
-                            <th>Physics</th>
-                            <th>Physics</th>
-                            <th>Physics</th>
-                            <th>Physics</th>
-                        </tr>
-                        <tr><td class="text-center" colspan="6">Break</th>
-                        </tr>
-                        <tr>
-                            <th>Physics</th>
-                            <th>Physics</th>
-                            <th>Physics</th>
-                            <th>Physics</th>
-                            <th>Physics</th>
-                            <th>Physics</th>
-                        </tr>
-                        <tr>
-                            <th>Physics</th>
-                            <th>Physics</th>
-                            <th>Physics</th>
-                            <th>Physics</th>
-                            <th>Physics</th>
-                            <th>Physics</th>
-                        </tr>
-                        <tr>
-                            <th>Physics</th>
-                            <th>Physics</th>
-                            <th>Physics</th>
-                            <th>Physics</th>
-                            <th>Physics</th>
-                            <th>Physics</th>
-                        </tr>
-                    </div>
+                    <thead id="table-head">
+
+                    </thead>
+                    <tbody id="table-body">
+
+                    </tbody>
                 </table>
+                <div id="admin-btn">
+
+                </div>
             </div>
         </div>
     </body>
+
+    <script>
+        console.log(localStorage);
+        var stud_id = parseInt(localStorage.getItem("stud_id"));
+        var teach_id = parseInt(localStorage.getItem("teach_id"));
+        var admin_id = parseInt(localStorage.getItem("admin_id"));
+    
+    var tab = ``;
+    if(!isNaN(stud_id) && isNaN(teach_id) && isNaN(admin_id)){
+        console.log("Student");
+        const URL = `http://localhost:4000/user?type=details&stud_id=${stud_id}`
+        let config = {
+            headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json"
+            }
+        }
+        axios.get(URL, config)
+        .then(res=>{
+            if(res.data.message == 1){
+                var array = res.data.obj;
+                console.log(array);
+                var dayArray = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                var con = 7;
+                var time = 'am';
+                var day = `<tr>
+                    <td class="text-center"><b>TIME</b></td>
+                    <td class="text-center"><b>${dayArray[0]}</b></td>
+                    <td class="text-center"><b>${dayArray[1]}</b></td>
+                    <td class="text-center"><b>${dayArray[2]}</b></td>
+                    <td class="text-center"><b>${dayArray[3]}</b></td>
+                    <td class="text-center"><b>${dayArray[4]}</b></td>
+                    <td class="text-center"><b>${dayArray[5]}</b></td>
+                    </tr>`;
+                for(var i=1; i<=array.length; i++){
+                    var arr;
+                    for(var j=0; j<array.length; j++)
+                        if(array[j][0].time_slot == i){
+
+                            tab += `<tr>`;
+                            if(array[j][0].time_slot + con < 12)
+                                tab += `<td class="text-center"><b>${array[j][0].time_slot + con}:00 ${time} to ${array[j][0].time_slot + con}:50 ${time}</b></td>`;
+
+                            else if(array[j][0].time_slot + con > 12)
+                                tab += `<td class="text-center"><b>${array[j][0].time_slot + con - 12}:00 ${time} to ${array[j][0].time_slot + con - 12}:50 ${time}</b></td>`;
+
+                            else if(array[j][0].time_slot + con == 12){
+                                tab += `<td colspan="7" class="text-center">BREAK</td></tr>
+                                <tr>`;
+                                con++;
+                                time = 'pm';
+                                tab += `<td class="text-center"><b>${array[j][0].time_slot + con - 12}:00 ${time} to ${array[j][0].time_slot + con - 12}:50 ${time}</b></td>`;
+                            }
+                            for(var k=0; k<array[0].length; k++){
+                                var temp = array[j][k];
+                                if(temp.day == dayArray[k]){
+                                tab += `<td class="text-center">
+                                    <b>Course:</b> ${temp.course_name}<br>
+                                    <b>Teacher:</b> ${temp.teach_name}
+                                    </td>`
+                                }
+                                else temp += `<td class="text-center"></td>`;
+                            }
+                            tab += `</tr>`
+                        }
+                }
+                document.getElementById("table-body").innerHTML = tab;
+                document.getElementById("table-head").innerHTML = day;
+            }
+            else {
+                alert("Warning!! Please exit the window and try again");
+            }
+        })
+        .catch(err=>console.log(err));
+
+    } 
+    
+    else if(isNaN(stud_id) && !isNaN(teach_id) && isNaN(admin_id)) {
+        const URL = `http://localhost:4000/teacher?type=details&teach_id=${teach_id}`
+        let config = {
+            headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json"
+            }
+        }
+        axios.get(URL, config)
+        .then(res=>{
+            if(res.data.message == 1){
+                var array = res.data.obj;
+                var dayArray = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                var con = 7;
+                var time = 'am';
+                var day = `<tr>
+                    <td class="text-center"><b>TIME</b></td>
+                    <td class="text-center"><b>${dayArray[0]}</b></td>
+                    <td class="text-center"><b>${dayArray[1]}</b></td>
+                    <td class="text-center"><b>${dayArray[2]}</b></td>
+                    <td class="text-center"><b>${dayArray[3]}</b></td>
+                    <td class="text-center"><b>${dayArray[4]}</b></td>
+                    <td class="text-center"><b>${dayArray[5]}</b></td>
+                    </tr>`;
+                for(var i=1; i<=array.length; i++){
+                    var arr;
+                    for(var j=0; j<array.length; j++)
+                        if(array[j][0].time_slot == i){
+
+                            tab += `<tr>`;
+                            if(array[j][0].time_slot + con < 12)
+                                tab += `<td class="text-center"><b>${array[j][0].time_slot + con}:00 ${time} to ${array[j][0].time_slot + con}:50 ${time}</b></td>`;
+
+                            else if(array[j][0].time_slot + con > 12)
+                                tab += `<td class="text-center"><b>${array[j][0].time_slot + con - 12}:00 ${time} to ${array[j][0].time_slot + con - 12}:50 ${time}</b></td>`;
+
+                            else if(array[j][0].time_slot + con == 12){
+                                tab += `<td colspan="7" class="text-center">BREAK</td></tr>
+                                <tr>`;
+                                con++;
+                                time = 'pm';
+                                tab += `<td class="text-center"><b>${array[j][0].time_slot + con - 12}:00 ${time} to ${array[j][0].time_slot + con -12}:50 ${time}</b></td>`;
+                            }
+                            for(var k=0; k<array[0].length; k++){
+                                var temp = array[j][k];
+                                if(temp.day == dayArray[k]){
+                                tab += `<td class="text-center">
+                                    <b>Course:</b> ${temp.course_name}<br>
+                                    <b>Year:</b> ${temp.year}<br>
+                                    <b>Room Number:</b> ${temp.room_number}<br>
+                                    <b>Block:</b> ${temp.block}<br>
+                                    </td>`
+                                }
+                                else temp += `<td class="text-center"></td>`;
+                            }
+                            tab += `</tr>`
+                        }
+                }
+                document.getElementById("table-body").innerHTML = tab;
+                document.getElementById("table-head").innerHTML = day;
+            }
+            else {
+                alert("Warning!! Please exit the window and try again");
+            }
+        })
+        .catch(err=>console.log(err));
+    }
+
+    else if(isNaN(stud_id) && isNaN(teach_id) && !isNaN(admin_id)){
+        //var div = document.getElementById("table-head");
+        //document.getElementById("table-course").remove();
+        var str = `<button id="btn-admin">Validate</button>`
+        document.getElementById("admin-btn").innerHTML = str;
+    }
+    else {
+        alert("Invalid login. Please try again")
+        
+        var loc = window.location.pathname;
+        var dir = loc.substring(0, loc.lastIndexOf('/'));
+        dir += "/main.html";
+        window.top.location.href = dir;
+    }
+    </script>
 </html>

@@ -10,7 +10,7 @@ const app = express();
 const mysql = require('mysql');
 const { NULL } = require('mysql/lib/protocol/constants/types');
 
-import {connection} from '../../connection.js';
+import {connection} from '../connection.js';
 
 connection.connect(function(err) {
         

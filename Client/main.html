@@ -23,19 +23,25 @@
             }
         }
     </style>
+    <script>
+        window.onload = (event) =>{
+            localStorage.clear();
+            sessionStorage.clear();
+        };
+    </script>
 
 <body>
     <div class ="Page">    
     <h2 class="text-center">Login Page</h2><br>    
-        <div class="container py-7">
+        <div class="container">
             <div class="row justify-content-center px-5">
-                <div class="col-lg-3 col-xxl-3" id="buttonDiv">
+                <div class="col-lg-4 col-xxl-4 d-flex px-5" id="buttonDiv">
                     <button class="text-center" id="button" onclick="getStudent()">Student</button>
                 </div>                
-                <div class="col-lg-3 col-xxl-3" id="buttonDiv">
+                <div class="col-lg-4 col-xxl-4 d-flex p-5" id="buttonDiv">
                     <button class="text-center" id="button" onclick="getTeacher()">Teacher</button>
                 </div>
-                <div class="col-lg-3 col-xxl-3" id="buttonDiv">
+                <div class="col-lg-4 col-xxl-4 d-flex p-5" id="buttonDiv">
                     <button class="text-center" id="button" onclick="getAdmin()">Admin</button>
                 </div>
             </div>
